@@ -1,0 +1,140 @@
+PUT _ingest/pipeline/earthquake_data_pipeline
+{
+  "processors": [
+    {
+      "remove": {
+        "field": [
+          "update",
+          "tz",
+          "detail",
+          "felt",
+          "cdi",
+          "mmi",
+          "alert",
+          "status",
+          "tsunami",
+          "net",
+          "code",
+          "ids",
+          "sources",
+          "types",
+          "nst",
+          "dmin",
+          "rms",
+          "gap",
+          "magType",
+          "title"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "date": {
+        "field": "time",
+        "formats": [
+          "UNIX_MS"
+        ]
+      }
+    },
+    {
+      "remove": {
+        "field": "time",
+        "ignore_missing": true
+      }
+    },
+    {
+      "rename": {
+        "field": "latitude",
+        "target_field": "coordinates.lat"
+      }
+    },
+    {
+      "rename": {
+        "field": "longitude",
+        "target_field": "coordinates.lon"
+      }
+    }
+  ]
+}
+
+PUT earthquakes
+{
+  "mappings": {
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      "coordinates": {
+        "type": "geo_point"
+      },
+      "depth": {
+        "type": "float"
+      },
+      "mag": {
+        "type": "float"
+      },
+      "place": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "sig": {
+        "type": "short"
+      },
+      "type": {
+        "type": "keyword"
+      },
+      "url": {
+        "enabled": false
+      }
+    }
+  }
+}
+
+
+PUT news
+{
+  "mappings": {
+    "properties": {
+      "publishedAt": {
+        "type": "date"
+      },
+      "content": {
+        "type": "text"
+      },
+      "description": {
+        "type": "text"
+      },
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "sourceName": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "author": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "url": {
+        "enabled": false
+      }
+    }
+  }
+}
